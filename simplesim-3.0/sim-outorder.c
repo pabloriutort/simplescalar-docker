@@ -91,6 +91,9 @@ static struct mem_t *mem = NULL;
  * simulator options
  */
 
+/* number of cores */
+static unsigned int num_cores;
+
 /* maximum number of inst's to execute */
 static unsigned int max_insts;
 
@@ -579,6 +582,12 @@ sim_reg_options(struct opt_odb_t *odb)
 "execution support.  This simulator is a performance simulator, tracking the\n"
 "latency of all pipeline operations.\n"
 		 );
+
+  /* core number */
+
+  opt_reg_uint(odb, "-num:core", "number of cores",
+	       &num_cores, /* default */0,
+	       /* print */TRUE, /* format */NULL);
 
   /* instruction limit */
 
