@@ -412,7 +412,10 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 /* memory access latency, assumed to not cross a page boundary */
 static unsigned int			/* total latency of access */
-mem_access_latency(int blk_sz)		/* block size accessed */
+mem_access_latency(int blk_sz,		/* block size accessed */ 
+		enum mem_cmd cmd,	/* access cmd, Read or Write */
+		md_addr_t baddr,	/* block address to access */
+		tick_t now)		/* time of access */
 {
   int chunks = (blk_sz + (mem_bus_width - 1)) / mem_bus_width;
 
@@ -454,7 +457,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+	return mem_access_latency(bsize, cmd, baddr, now);
       else
 	{
 	  /* FIXME: unlimited write buffers */
@@ -473,7 +476,7 @@ dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
-    return mem_access_latency(bsize);
+    return mem_access_latency(bsize, cmd, baddr, now);
   else
     {
       /* FIXME: unlimited write buffers */
@@ -505,7 +508,7 @@ if (cache_il2)
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+	return mem_access_latency(bsize, cmd, baddr, now);
       else
 	panic("writes to instruction memory not supported");
     }
@@ -521,7 +524,7 @@ il2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
-    return mem_access_latency(bsize);
+    return mem_access_latency(bsize, cmd, baddr, now);
   else
     panic("writes to instruction memory not supported");
 }
