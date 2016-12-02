@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$1" = "alpha" ] || [ "$1" = "pisa" ]; then
+	make clean;
+	make config-$1;
+	make
+	
+	if [ "$2" != "" ]; then
+		./$2
+	fi
+else
+	echo "ERROR: '$1' is not a valid param. Use 'alpha' or 'pisa' instead";
+fi
