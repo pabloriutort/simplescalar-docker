@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "$1" = "alpha" ] || [ "$1" = "pisa" ]; then
+	make clean;
+	make config-$1;
+	make
+	
+	args=${@:2} # get all arguments except 0 and 1
+	if [ "$args" != "" ]; then
+		./$args
+	fi
+else
+	echo "ERROR: '$1' is not a valid param. Use 'alpha' or 'pisa' instead";
+fi
