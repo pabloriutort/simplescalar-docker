@@ -420,6 +420,23 @@ mem_access_latency(int blk_sz,		/* block size accessed */
   int chunks = (blk_sz + (mem_bus_width - 1)) / mem_bus_width;
 
   assert(chunks > 0);
+  
+  /* write data in file */
+  FILE *f = fopen("memory_content.txt", "a");
+  if (f == NULL){
+    printf("Error opening file!\n");
+  }else{
+	/* write memory data into file */
+	if (cmd == Read){
+	  fprintf(f,"r ");
+	}else if(cmd == Write){
+	  fprintf(f,"w ");
+	}
+	
+	fprintf(f, "%u ", baddr);
+	fprintf(f, "%u\n", now);
+	fclose(f);
+  }
 
   return (/* first chunk latency */mem_lat[0] +
 	  (/* remainder chunk latency */mem_lat[1] * (chunks - 1)));
