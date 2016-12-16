@@ -412,11 +412,31 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 /* memory access latency, assumed to not cross a page boundary */
 static unsigned int			/* total latency of access */
-mem_access_latency(int blk_sz)		/* block size accessed */
+mem_access_latency(int blk_sz,		/* block size accessed */ 
+		enum mem_cmd cmd,	/* access cmd, Read or Write */
+		md_addr_t baddr,	/* block address to access */
+		tick_t now)		/* time of access */
 {
   int chunks = (blk_sz + (mem_bus_width - 1)) / mem_bus_width;
 
   assert(chunks > 0);
+  
+  /* write data in file */
+  FILE *f = fopen("memory_content.txt", "a");
+  if (f == NULL){
+    printf("Error opening file!\n");
+  }else{
+	/* write memory data into file */
+	if (cmd == Read){
+	  fprintf(f,"r ");
+	}else if(cmd == Write){
+	  fprintf(f,"w ");
+	}
+	
+	fprintf(f, "%u ", baddr);
+	fprintf(f, "%u\n", now);
+	fclose(f);
+  }
 
   return (/* first chunk latency */mem_lat[0] +
 	  (/* remainder chunk latency */mem_lat[1] * (chunks - 1)));
@@ -454,7 +474,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+	return mem_access_latency(bsize, cmd, baddr, now);
       else
 	{
 	  /* FIXME: unlimited write buffers */
@@ -473,7 +493,7 @@ dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
-    return mem_access_latency(bsize);
+    return mem_access_latency(bsize, cmd, baddr, now);
   else
     {
       /* FIXME: unlimited write buffers */
@@ -505,7 +525,7 @@ if (cache_il2)
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+	return mem_access_latency(bsize, cmd, baddr, now);
       else
 	panic("writes to instruction memory not supported");
     }
@@ -521,7 +541,7 @@ il2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
-    return mem_access_latency(bsize);
+    return mem_access_latency(bsize, cmd, baddr, now);
   else
     panic("writes to instruction memory not supported");
 }
