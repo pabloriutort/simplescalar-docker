@@ -9,6 +9,11 @@ if [ "$1" = "alpha" ] || [ "$1" = "pisa" ]; then
 	if [ "$args" != "" ]; then
 		./$args
 	fi
+elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	echo "Usage \"./go sim_config simulation path\" where:";
+	echo -e "\tsim_config: Which simulator configuration to run (alpha|pisa).";
+	echo -e "\tsimulation: Which simulation executable to run, like \"sim-outorder\"";
+	echo -e "\tpath of the tests to run, like \"tests-alpha/bin/test-math\"\n";
 else
 	echo "ERROR: '$1' is not a valid param. Use 'alpha' or 'pisa' instead";
 fi
