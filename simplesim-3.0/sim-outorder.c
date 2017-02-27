@@ -427,6 +427,7 @@ mem_access_latency(int blk_sz,		/* block size accessed */
     printf("Error opening file!\n");
   }else{
 	/* write memory data into file */
+	fprintf(f, "%d ", blk_sz);
 	if (cmd == Read){
 	  fprintf(f,"r ");
 	}else if(cmd == Write){
