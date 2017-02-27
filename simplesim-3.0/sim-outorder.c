@@ -425,7 +425,7 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 	int result = mem_lat[0] + (mem_lat[1] * (chunks - 1));
   
   /* write data in file */
-  FILE *f = fopen("memory_content.txt", "a");
+  FILE *f = fopen("DRAM/memory_content.txt", "a");
   if (f == NULL){
     printf("Error opening file!\n");
   }else{
@@ -442,7 +442,7 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 	fclose(f);
 
 	// wait until signal file is created and has read permissions
-	char *filename = "signal";
+	char *filename = "DRAM/signal";
 	while (access(filename, R_OK) == -1){
 		sleep(1);
 	}
@@ -457,16 +457,13 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 
 		//cast read content into integer
 		result = atoi(line);
-		printf("Result was %d\n");
+		printf("DRAM: %d\n");
 
 		// delete signal file
 		fclose(signal);
 		if(remove(filename) != 0){
-			printf("Signal file not succesfully deleted\n");
-		}else{
-			printf("Signal file deleted\n");
+			printf("Could not delete signal file\n");
 		}
-
 	}
 
   }
