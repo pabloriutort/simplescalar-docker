@@ -72,6 +72,7 @@
 #include "ptrace.h"
 #include "dlite.h"
 #include "sim.h"
+#include "unistd.h"
 
 /*
  * This file implements a very detailed out-of-order issue superscalar
@@ -420,6 +421,8 @@ mem_access_latency(int blk_sz,		/* block size accessed */
   int chunks = (blk_sz + (mem_bus_width - 1)) / mem_bus_width;
 
   assert(chunks > 0);
+	//previous return result
+	int result = mem_lat[0] + (mem_lat[1] * (chunks - 1));
   
   /* write data in file */
   FILE *f = fopen("memory_content.txt", "a");
@@ -437,10 +440,38 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 	fprintf(f, "%u ", baddr);
 	fprintf(f, "%u\n", now);
 	fclose(f);
+
+	// wait until signal file is created and has read permissions
+	char *filename = "signal";
+	while (access(filename, R_OK) == -1){
+		sleep(1);
+	}
+
+	FILE *signal = fopen(filename, "r");
+	if (signal == NULL){
+		printf("Error opening signal file!\n");
+	}else{
+		// read signal file content
+		char line[256];
+		fgets(line,sizeof(line),signal);
+
+		//cast read content into integer
+		result = atoi(line);
+		printf("Result was %d\n");
+
+		// delete signal file
+		fclose(signal);
+		if(remove(filename) != 0){
+			printf("Signal file not succesfully deleted\n");
+		}else{
+			printf("Signal file deleted\n");
+		}
+
+	}
+
   }
 
-  return (/* first chunk latency */mem_lat[0] +
-	  (/* remainder chunk latency */mem_lat[1] * (chunks - 1)));
+  return result;
 }
 
 
