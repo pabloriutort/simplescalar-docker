@@ -963,9 +963,20 @@ sys_syscall(struct regs_t *regs,	/* registers to access */
   switch (syscode)
     {
     case OSF_SYS_exit:
+		{
+		/* End execution of the simulation. Send HALT to DRAM */
+		FILE *f = fopen("DRAM/memory_content.txt", "w");
+		if (f == NULL){
+			printf("Error opening file!\n");
+		}else{
+			// write a halt
+			fprintf(f, "HALT");
+			fclose(f);
+		}
       /* exit jumps to the target set in main() */
       longjmp(sim_exit_buf,
 	      /* exitcode + fudge */(regs->regs_R[MD_REG_A0] & 0xff) + 1);
+		}
       break;
 
     case OSF_SYS_read:
