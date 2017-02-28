@@ -425,7 +425,7 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 	int result = mem_lat[0] + (mem_lat[1] * (chunks - 1));
   
   /* write data in file */
-  FILE *f = fopen("DRAM/memory_content.txt", "a");
+  FILE *f = fopen("DRAM/memory_content.txt", "w");
   if (f == NULL){
     printf("Error opening file!\n");
   }else{
