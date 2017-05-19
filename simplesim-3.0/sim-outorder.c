@@ -444,7 +444,8 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 	// wait until signal file is created and has read permissions
 	char *filename = "DRAM/signal";
 	while (access(filename, R_OK) == -1){
-		sleep(1);
+		//usleep(10000);
+		usleep(10000);
 	}
 
 	FILE *signal = fopen(filename, "r");
@@ -457,7 +458,7 @@ mem_access_latency(int blk_sz,		/* block size accessed */
 
 		//cast read content into integer
 		result = atoi(line);
-		printf("DRAM: %d\n");
+		//printf("DRAM: %d\n");
 
 		// delete signal file
 		fclose(signal);
@@ -491,24 +492,12 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
       /* access next level of data cache hierarchy */
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
 			 /* now */now, /* pudata */NULL, /* repl addr */NULL);
-      if (cmd == Read)
 	return lat;
-      else
-	{
-	  /* FIXME: unlimited write buffers */
-	  return 0;
 	}
-    }
   else
     {
       /* access main memory */
-      if (cmd == Read)
 	return mem_access_latency(bsize, cmd, baddr, now);
-      else
-	{
-	  /* FIXME: unlimited write buffers */
-	  return 0;
-	}
     }
 }
 
@@ -521,13 +510,7 @@ dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 	      tick_t now)		/* time of access */
 {
   /* this is a miss to the lowest level, so access main memory */
-  if (cmd == Read)
     return mem_access_latency(bsize, cmd, baddr, now);
-  else
-    {
-      /* FIXME: unlimited write buffers */
-      return 0;
-    }
 }
 
 /* l1 inst cache l1 block miss handler function */
