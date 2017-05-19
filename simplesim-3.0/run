@@ -1,19 +1,30 @@
 #!/bin/bash
 
+
+function run {
+	args=${@:2} # get all arguments except 0 and 1
+	if [ "$args" != "" ]; then
+		./$args
+	fi
+}
+
+
 if [ "$1" = "alpha" ] || [ "$1" = "pisa" ]; then
 	make clean;
 	make config-$1;
 	make
 	
-	args=${@:2} # get all arguments except 0 and 1
-	if [ "$args" != "" ]; then
-		./$args
-	fi
+	run ${@}
+
+elif [ "$1" = "-e" ] || [ "$1" = "--execute" ]; then
+	run ${@}
+
 elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-	echo "Usage \"./run sim_config simulation path\" where:";
+	echo "Usage \"./run sim_config simulation path\"";
+	echo -e "where:";
 	echo -e "\tsim_config: Which simulator configuration to run (alpha|pisa).";
 	echo -e "\tsimulation: Which simulation executable to run, like \"sim-outorder\"";
-	echo -e "\tpath of the tests to run, like \"tests-alpha/bin/test-math\"\n";
+	echo -e "\tpath of the tests or benchmark to run\n";
 else
 	echo "ERROR: '$1' is not a valid param. Use 'alpha' or 'pisa' instead";
 fi
